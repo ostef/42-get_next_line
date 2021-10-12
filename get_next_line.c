@@ -52,11 +52,16 @@ int	get_next_line(const int fd, char **line)
 			*line = builder.data;
 			return (1);
 		}
-		if (ft_read (&reader) <= 0)
+		ft_read (&reader);
+		if (reader.count == 0)
 		{
-			free (builder.data);
-			return (reader.count);
+			ft_builder_print_char (&builder, 0);
+			*line = builder.data;
+			return (0);
 		}
+		else if (reader.count == -1)
+			break ;
 	}
+	free (builder.data);
 	return (-1);
 }

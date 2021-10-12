@@ -7,14 +7,18 @@ int	main(int argc, char **args)
 {
 	int		fd;
 	char	*line;
+	int		res;
 
 	if (argc == 1)
 		fd = 0;
 	else
 		fd = open (args[1], O_RDONLY);
-	while (get_next_line (fd, &line) > 0)
+	while (1)
 	{
+		res = get_next_line (fd, &line);
 		printf ("%s\n", line);
 		free (line);
+		if (res <= 0)
+			break ;
 	}
 }
