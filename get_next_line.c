@@ -22,6 +22,22 @@ static long	ft_read(t_line_reader *r)
 	return (r->count);
 }
 
+static int	ft_copy_buff(t_line_reader *r, t_str_builder *b)
+{
+	while (r->cursor < r->count)
+	{
+		if (r->buff[r->cursor] == '\n')
+		{
+			r->cursor += 1;
+			ft_builder_print_char (b, 0);
+			return (1);
+		}
+		ft_builder_print_char (b, r->buff[r->cursor]);
+		r->cursor += 1;
+	}
+	return (0);
+}
+
 int	get_next_line(const int fd, char **line)
 {
 	static t_line_reader	reader;
@@ -31,22 +47,15 @@ int	get_next_line(const int fd, char **line)
 	ft_builder_init (&builder, 100);
 	while (1)
 	{
-		while (reader.cursor < reader.count)
+		if (ft_copy_buff (&reader, &builder))
 		{
-			if (reader.buff[reader.cursor] == '\n')
-			{
-				reader.cursor += 1;
-				ft_builder_print_char (&builder, 0);
-				*line = builder.data;
-				return (1);
-			}
-			ft_builder_print_char (&builder, g_reader.buff[g_reader.cursor]);
-			g_reader.cursor += 1;
+			*line = builder.data;
+			return (1);
 		}
-		if (ft_read (&g_reader) <= 0)
+		if (ft_read (&reader) <= 0)
 		{
 			free (builder.data);
-			return (g_reader.count);
+			return (reader.count);
 		}
 	}
 	return (-1);
