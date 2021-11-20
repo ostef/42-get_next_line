@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.h                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: soumanso <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: soumanso <soumanso@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/16 16:47:20 by soumanso          #+#    #+#             */
-/*   Updated: 2021/11/16 16:47:27 by soumanso         ###   ########lyon.fr   */
+/*   Created: 2021/11/10 20:20:42 by soumanso          #+#    #+#             */
+/*   Updated: 2021/11/14 21:16:22 by soumanso         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#ifndef GET_NEXT_LINE_BONUS_H
+# define GET_NEXT_LINE_BONUS_H
 
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 1024
@@ -30,8 +30,12 @@ typedef struct s_line_reader
 	long					count;
 	long					cursor;
 	char					buff[BUFFER_SIZE];
+	struct s_line_reader	*prev;
+	struct s_line_reader	*next;
 }	t_line_reader;
 
+t_line_reader	*ft_get_reader(t_line_reader **readers, const int fd);
+void			ft_free_reader(t_line_reader **readers, const int fd);
 void			ft_builder_init(t_str_builder *b, long cap);
 void			ft_builder_print_char(t_str_builder *b, char c);
 char			*get_next_line(const int fd);

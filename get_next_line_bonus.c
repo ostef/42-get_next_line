@@ -1,28 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: soumanso <soumanso@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/16 16:47:58 by soumanso          #+#    #+#             */
-/*   Updated: 2021/11/18 07:51:58 by soumanso         ###   ########lyon.fr   */
+/*   Created: 2021/11/10 20:19:51 by soumanso          #+#    #+#             */
+/*   Updated: 2021/11/18 07:51:32 by soumanso         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 #include <stdlib.h>
 #include <unistd.h>
-
-static void	ft_set_fd(t_line_reader *r, int fd)
-{
-	if (r->fd != fd)
-	{
-		r->fd = fd;
-		r->count = 0;
-		r->cursor = 0;
-	}
-}
 
 static long	ft_read(t_line_reader *r)
 {
@@ -51,26 +41,29 @@ static int	ft_copy_buff(t_line_reader *r, t_str_builder *b)
 
 char	*get_next_line(const int fd)
 {
-	static t_line_reader	reader;
+	static t_line_reader	*readers;
+	t_line_reader			*reader;
 	t_str_builder			builder;
 
-	ft_set_fd (&reader, fd);
+	reader = ft_get_reader (&readers, fd);
 	ft_builder_init (&builder, 100);
-	while (builder.data)
+	while (reader && builder.data)
 	{
-		if (ft_copy_buff (&reader, &builder))
+		if (ft_copy_buff (reader, &builder))
 			return (builder.data);
-		ft_read (&reader);
-		if (reader.count == 0)
+		ft_read (reader);
+		if (reader->count == 0)
 		{
 			if (builder.count == 0)
 				break ;
+			ft_free_reader (&readers, fd);
 			ft_builder_print_char (&builder, 0);
 			return (builder.data);
-		}
-		else if (reader.count < 0)
+		}	
+		else if (reader->count < 0)
 			break ;
 	}
 	free (builder.data);
+	ft_free_reader (&readers, fd);
 	return (NULL);
 }

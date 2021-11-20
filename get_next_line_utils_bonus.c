@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: soumanso <soumanso@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/16 16:48:11 by soumanso          #+#    #+#             */
-/*   Updated: 2021/11/16 17:47:09 by soumanso         ###   ########lyon.fr   */
+/*   Created: 2021/11/10 20:20:22 by soumanso          #+#    #+#             */
+/*   Updated: 2021/11/16 17:46:55 by soumanso         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 #include <stdlib.h>
 
 static void	ft_grow(t_str_builder *b)
@@ -62,4 +62,51 @@ void	ft_builder_print_char(t_str_builder *b, char c)
 		b->data[b->count] = c;
 		b->count += 1;
 	}
+}
+
+t_line_reader	*ft_get_reader(t_line_reader **readers, const int fd)
+{
+	t_line_reader	*result;
+
+	result = *readers;
+	while (result)
+	{
+		if (result->fd == fd)
+			return (result);
+		result = result->next;
+	}
+	result = (t_line_reader *)malloc (sizeof (t_line_reader));
+	if (!result)
+		return (NULL);
+	result->prev = NULL;
+	result->next = *readers;
+	if (result->next)
+		result->next->prev = result;
+	result->fd = fd;
+	result->count = 0;
+	result->cursor = 0;
+	*readers = result;
+	return (result);
+}
+
+void	ft_free_reader(t_line_reader **readers, const int fd)
+{
+	t_line_reader	*reader;
+
+	reader = *readers;
+	while (reader)
+	{
+		if (reader->fd == fd)
+			break ;
+		reader = reader->next;
+	}
+	if (!reader)
+		return ;
+	if (reader->next)
+		reader->next->prev = reader->prev;
+	if (reader->prev)
+		reader->prev->next = reader->next;
+	else
+		*readers = reader->next;
+	free (reader);
 }
